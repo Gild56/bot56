@@ -1,6 +1,6 @@
-# Bot56 (or Bot57)
+# Bot56
 
-Bot56 is my personal Discord bot. You can guess levels positions in the Demonlist with it!
+Bot56 (or Bot57) is my personal Discord bot. You can guess levels positions in the Demonlist with it!
 
 Join my [Discord server](https://discord.gg/D4mUZtkAMY) :)
 
