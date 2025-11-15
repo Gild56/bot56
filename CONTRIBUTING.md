@@ -8,8 +8,8 @@ Then, you can add 3 images into that folder, the name of these images isn't impo
 
 Images need to be entire screenshots 16/9 and good quality.
 
-We need to see the actual gameplay - think about the people who will play it!
+We need to see the actual gameplay - think about the people who will guess it!
 
-First, please check the already existing examples.
+Before doing, please check the already existing examples in ``src/images/``.
 
-When you are done, make a pull request and I will merge it.
+When you are done, make a pull request and I will merge it :3
