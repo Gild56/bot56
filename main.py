@@ -26,9 +26,27 @@ GUILD_ID = 1401117933203226727
 
 TIME_TO_GUESS = 60
 
+WORDS = {
+    "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902"
+}
+
+@bot.event
+async def on_message(message: discord.Message):
+    if message.author == bot.user:
+        return
+
+    content_lower = message.content.lower()
+
+    for word, reply in WORDS.items():
+        if word in content_lower:
+            await message.reply(reply)
+            break
+
+    await bot.process_commands(message)
+
 @bot.tree.command(name="guess", description="Makes you guess a level")
 async def guess(interaction: discord.Interaction):
-    await interaction.response.defer(thinking=True)  # On garde la réponse ouverte
+    await interaction.response.defer(thinking=True)
 
     levels = gdl_api.get_all_levels()
     level = gdl_api.get_random_level()
@@ -41,7 +59,7 @@ async def guess(interaction: discord.Interaction):
     files_to_send: list[File] = []
 
     if os.path.exists(images_dir):
-        for filename in sorted(os.listdir(images_dir))[:3]:  # prend les 3 premières images
+        for filename in sorted(os.listdir(images_dir))[:3]:
             file_path = os.path.join(images_dir, filename)
             files_to_send.append(File(file_path))
 
