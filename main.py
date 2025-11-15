@@ -24,10 +24,11 @@ BOT_CHANNEL_ID = 1401147497438515361
 LOGS_CHANNEL_ID = 1403021816460476466
 GUILD_ID = 1401117933203226727
 
-TIME_TO_GUESS = 60
+TIME_TO_GUESS = 60  # sec
 
 WORDS = {
-    "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902"
+    "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
+    "crazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538"
 }
 
 @bot.event
