@@ -2,6 +2,7 @@ import discord
 import gdl_api
 import asyncio
 import os
+import re
 import dotenv
 from discord.ext import commands
 from discord import File
@@ -28,8 +29,28 @@ TIME_TO_GUESS = 60  # sec
 
 WORDS = {
     "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
-    "crazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538"
+    "crazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538",
+    "krazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538"
 }
+
+def duration(sec: int | str):
+    if not isinstance(sec, int) or sec < 0:
+        return sec
+
+    h = sec // 3600
+    sec %= 3600
+    m = sec // 60
+    s = sec % 60
+
+    parts = []
+    if h:
+        parts.append(f"{h}h")
+    if m:
+        parts.append(f"{m}m")
+    if s or not parts:
+        parts.append(f"{s}s")
+
+    return " ".join(parts)
 
 @bot.event
 async def on_message(message: discord.Message):
@@ -38,8 +59,12 @@ async def on_message(message: discord.Message):
 
     content_lower = message.content.lower()
 
+    url_regex = r"https?://\S+"
+
+    content_clean = re.sub(url_regex, "", content_lower)
+
     for word, reply in WORDS.items():
-        if word in content_lower:
+        if re.search(rf"\b{word}\b", content_clean):
             await message.reply(reply)
             break
 
@@ -66,9 +91,17 @@ async def guess(interaction: discord.Interaction):
 
     if files_to_send:
         await interaction.followup.send(
-            content=f"🎯 Guess this level's position between 1 and {len(levels)}! You have **{TIME_TO_GUESS} seconds**.",
+            content=f"""
+🎯 Guess this level's position between 1 and {len(levels)}!
+You have **{TIME_TO_GUESS} seconds**.
+## Info:
+This level is {duration(level_info.get("length", "Unknown"))} long
+""",
             files=files_to_send
         )
+    else:
+        print("no images")
+        interaction.channel.send("Error")
 
     guesses = {}
 
@@ -106,8 +139,9 @@ async def guess(interaction: discord.Interaction):
     winner_name = winner_user.mention if winner_user else f"<@{winner_id}>"
 
     result_lines = [
-        f"""✅ **The correct position was #{level_position}!**
-The Level was {level} by {level_info.get("creator", "Unknown")} verified by {level_info.get("verifier", "Unknown")}
+        f"""
+✅ **The correct position was #{level_position}!**
+The Level was {level} created by {level_info.get("creator", "Unknown")} in {level_info.get("created_in", "Unknown")} and verified by {level_info.get("verifier", "Unknown")}
 ID: ``{level_info.get("level_id", "Unknown")}``
 Watch: {level_info.get("video", "Unknown")}
 
