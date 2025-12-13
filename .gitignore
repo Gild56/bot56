@@ -1,3 +1,4 @@
 .env
 __pycache__/
 leaderboard.py
+leaderboard_list.py
