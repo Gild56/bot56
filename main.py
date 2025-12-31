@@ -6,7 +6,7 @@ import re
 import dotenv
 from discord.ext import commands
 from discord import File
-from discord import TextChannel
+#from discord import TextChannel
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -25,7 +25,7 @@ BOT_CHANNEL_ID = 1401147497438515361
 LOGS_CHANNEL_ID = 1403021816460476466
 GUILD_ID = 1401117933203226727
 
-TIME_TO_GUESS = 60  # sec
+TIME_TO_GUESS = 30  # sec
 
 WORDS = {
     "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
@@ -79,7 +79,7 @@ async def guess(interaction: discord.Interaction):
     level_id = gdl_api.get_level_id_by_name(level)
     level_info = gdl_api.get_level_info(level_id)
     if not level_info: return
-    level_position = level_info.get("place", "Unknown")
+    level_position = level_info.get("placement", "Unknown")
     images_dir = f"src/images/{level}"
 
     files_to_send: list[File] = []
@@ -141,9 +141,9 @@ This level is {duration(level_info.get("length", "Unknown"))} long
     result_lines = [
         f"""
 ✅ **The correct position was #{level_position}!**
-The Level was {level} created by {level_info.get("creator", "Unknown")} in {level_info.get("created_in", "Unknown")} and verified by {level_info.get("verifier", "Unknown")}
-ID: ``{level_info.get("level_id", "Unknown")}``
-Watch: {level_info.get("video", "Unknown")}
+The Level was {level} created by {level_info.get("creator", "Unknown")} in {level_info.get("game_version", "Unknown")} and verified by {level_info.get("verification", {"username": "Unknown"}).get("username", "Unknown")}
+ID: ``{level_info.get("ingame_id", "Unknown")}``
+Watch: {level_info.get("verification", {"video_url": "Unknown"}).get("video_url", "Unknown")}
 
 🏆 **Winner:** {winner_name} by {winner_diff} positions (guessed {winner_guess})
 """
@@ -155,9 +155,9 @@ Watch: {level_info.get("video", "Unknown")}
             name = f"<@{uid}>"
             result_lines.append(f"{i}. {name} → {g} (diff {d})")
 
-    channel = interaction.channel
-    if isinstance(channel, TextChannel):
-        await channel.send("\n".join(result_lines))
+    #channel = interaction.channel
+    #if isinstance(channel, TextChannel):
+    #    await channel.send("\n".join(result_lines))
     await interaction.channel.send("\n".join(result_lines))
 
 @bot.tree.command(name="say", description="Makes the bot say something (dont show that to Luis)")
