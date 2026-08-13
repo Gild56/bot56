@@ -182,4 +182,4 @@ async def on_ready():
         await channel.send("Bot is up!")
 
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)
