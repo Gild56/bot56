@@ -7,7 +7,6 @@ import io
 import aiohttp
 import dotenv
 from discord.ext import commands
-from discord import File
 #from discord import TextChannel
 
 intents = discord.Intents.default()
