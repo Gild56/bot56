@@ -3,6 +3,8 @@ import gdl_api
 import asyncio
 import os
 import re
+import io
+import aiohttp
 import dotenv
 from discord.ext import commands
 from discord import File
@@ -25,7 +27,7 @@ BOT_CHANNEL_ID = 1401147497438515361
 LOGS_CHANNEL_ID = 1403021816460476466
 GUILD_ID = 1401117933203226727
 
-TIME_TO_GUESS = 30  # sec
+TIME_TO_GUESS = 10  # sec
 
 WORDS = {
     "crazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538",
@@ -81,28 +83,30 @@ async def guess(interaction: discord.Interaction):
     level_info = gdl_api.get_level_info(level_id)
     if not level_info: return
     level_position = level_info.get("placement", "Unknown")
-    images_dir = f"images/{level}"
+    image_url = f'https://levelthumbs.prevter.me/thumbnail/{level_info.get("ingame_id", "Unknown")}'
 
-    files_to_send: list[File] = []
+    async with aiohttp.ClientSession() as session:
+        async with session.get(image_url) as resp:
+            if resp.status != 200:
+                await interaction.followup.send("Impossible de récupérer la miniature.")
+                return
 
-    if os.path.exists(images_dir):
-        for filename in sorted(os.listdir(images_dir))[:3]:
-            file_path = os.path.join(images_dir, filename)
-            files_to_send.append(File(file_path))
+            image_data = await resp.read()
 
-    if files_to_send:
-        await interaction.followup.send(
-            content=f"""
-🎯 Guess this level's position between 1 and {len(levels)}!
+    image_file = discord.File(
+        io.BytesIO(image_data),
+        filename="level.png"
+    )
+
+    await interaction.followup.send(
+        content=f"""
+## :fire: Guess this level's position between 1 and {len(levels)}!
 You have **{TIME_TO_GUESS} seconds**.
 ## Info:
 This level is {duration(level_info.get("length", "Unknown"))} long
 """,
-            files=files_to_send
-        )
-    else:
-        print("no images")
-        interaction.channel.send("Error")
+        file=image_file
+    )
 
     guesses = {}
 
@@ -147,7 +151,11 @@ ID: ``{level_info.get("ingame_id", "Unknown")}``
 Watch: {level_info.get("verification", {"video_url": "Unknown"}).get("video_url", "Unknown")}
 
 🏆 **Winner:** {winner_name} by {winner_diff} positions (guessed {winner_guess})
-"""
+    """ + (
+            "-# Touch grass, get some friends vro"
+            if len(guesses) == 1
+            else ""
+        )
     ]
 
     if len(results) > 1:

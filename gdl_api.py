@@ -1,6 +1,5 @@
 import requests
 import random
-import os
 
 
 def get_all_levels():
@@ -32,9 +31,8 @@ def get_level_info(id: int | None):
     return data
 
 def get_random_level():
-    path = "src/images"
-    folders = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
-    return random.choice(folders)
+    all_levels = get_all_levels()
+    return random.choice(all_levels).get("name")
 
 def get_level_id_by_name(level_name: str):
     levels = get_all_levels()
