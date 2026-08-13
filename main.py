@@ -14,11 +14,11 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 dotenv.load_dotenv()
-TOKEN = os.getenv("TOKEN")
-if not TOKEN:
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+if not DISCORD_TOKEN:
     raise RuntimeError(
-        "Error: Token not found\n" \
-        "You must create a .env file and write something like TOKEN=AB1wdfCD42.E41ghjfFG"
+        "Error: Discord token not found\n" \
+        "You must create a .env file and write something like DISCORD_TOKEN=AB1wdfCD42.E41ghjfFG"
     )
 
 BOT_CHANNEL_ID = 1401147497438515361
@@ -28,9 +28,10 @@ GUILD_ID = 1401117933203226727
 TIME_TO_GUESS = 30  # sec
 
 WORDS = {
-    "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
     "crazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538",
-    "krazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538"
+    "krazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538",
+    "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
+    "shitty angelicide": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902"
 }
 
 def duration(sec: int | str):
@@ -80,7 +81,7 @@ async def guess(interaction: discord.Interaction):
     level_info = gdl_api.get_level_info(level_id)
     if not level_info: return
     level_position = level_info.get("placement", "Unknown")
-    images_dir = f"src/images/{level}"
+    images_dir = f"images/{level}"
 
     files_to_send: list[File] = []
 
