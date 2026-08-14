@@ -164,7 +164,7 @@ ID: ``{level_info.get("ingame_id", "Unknown")}``
 Watch: {level_info.get("verification", {"video_url": "Unknown"}).get("video_url", "Unknown")}
 
 ## 🏆 Winner: {winner_name} by {winner_diff} positions (guessed {winner_guess})
-        """ + (
+""" + (
                 "-# Touch grass, get some friends vro"
                 if len(guesses) == 1
                 else ""
