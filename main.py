@@ -161,7 +161,7 @@ Watch: {level_info.get("verification", {"video_url": "Unknown"}).get("video_url"
         result_lines.append("__Leaderboard:__")
         for i, (uid, g, d) in enumerate(results[:10], start=1):
             name = f"<@{uid}>"
-            result_lines.append(f"{i}. {name} → {g} (diff {d})")
+            result_lines.append(f"{i}. {name} → {g} (off by {d})")
 
     #channel = interaction.channel
     #if isinstance(channel, TextChannel):
@@ -187,6 +187,24 @@ async def on_ready():
     channel = bot.get_channel(BOT_CHANNEL_ID)
     if channel:
         await channel.send("Bot is up!")
+
+
+from flask import Flask
+import threading
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Bot is online!"
+
+def run_web():
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000))
+    )
+
+threading.Thread(target=run_web, daemon=True).start()
 
 
 bot.run(DISCORD_TOKEN)
