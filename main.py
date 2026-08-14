@@ -72,101 +72,118 @@ async def on_message(message: discord.Message):
 
     await bot.process_commands(message)
 
+active_guess_channels = set()
 @bot.tree.command(name="guess", description="Makes you guess a level")
 async def guess(interaction: discord.Interaction):
-    await interaction.response.defer(thinking=True)
 
-    levels = gdl_api.get_all_levels()
-    level = gdl_api.get_random_level()
-    level_id = gdl_api.get_level_id_by_name(level)
-    level_info = gdl_api.get_level_info(level_id)
-    if not level_info: return
-    level_position = level_info.get("placement", "Unknown")
-    image_url = f'https://levelthumbs.prevter.me/thumbnail/{level_info.get("ingame_id", "Unknown")}'
+    channel_id = interaction.channel.id
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(image_url) as resp:
-            if resp.status != 200:
-                await interaction.followup.send("Impossible de récupérer la miniature.")
-                return
+    if channel_id in active_guess_channels:
+        await interaction.response.send_message(
+            "❌ A `/guess` is already running in this channel!",
+            ephemeral=True
+        )
+        return
 
-            image_data = await resp.read()
+    active_guess_channels.add(channel_id)
 
-    image_file = discord.File(
-        io.BytesIO(image_data),
-        filename="level.png"
-    )
+    try:
+        await interaction.response.defer(thinking=True)
 
-    await interaction.followup.send(
-        content=f"""
+        levels = gdl_api.get_all_levels()
+        level = gdl_api.get_random_level()
+        level_id = gdl_api.get_level_id_by_name(level)
+        level_info = gdl_api.get_level_info(level_id)
+        if not level_info: return
+        level_position = level_info.get("placement", "Unknown")
+        image_url = f'https://levelthumbs.prevter.me/thumbnail/{level_info.get("ingame_id", "Unknown")}'
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(image_url) as resp:
+                if resp.status != 200:
+                    await interaction.followup.send("Impossible de récupérer la miniature.")
+                    return
+
+                image_data = await resp.read()
+
+        image_file = discord.File(
+            io.BytesIO(image_data),
+            filename="level.png"
+        )
+
+        await interaction.followup.send(
+            content=f"""
 ## :fire: Guess this level's position between 1 and {len(levels)}!
 You have **{TIME_TO_GUESS} seconds**.
 ## Info:
 This level is {duration(level_info.get("length", "Unknown"))} long
 """,
-        file=image_file
-    )
+            file=image_file
+        )
 
-    guesses = {}
+        guesses = {}
 
-    def check(msg: discord.Message):
-        if msg.channel != interaction.channel:
-            return False
-        if not msg.content.isdigit():
-            return False
-        if msg.author.id in guesses:
-            return False
-        return True
+        def check(msg: discord.Message):
+            if msg.channel != interaction.channel:
+                return False
+            if not msg.content.isdigit():
+                return False
+            if msg.author.id in guesses:
+                return False
+            return True
 
-    try:
-        while True:
-            msg = await bot.wait_for("message", timeout=TIME_TO_GUESS, check=check)
-            guesses[msg.author.id] = int(msg.content)
-    except asyncio.TimeoutError:
-        pass
+        try:
+            while True:
+                msg = await bot.wait_for("message", timeout=TIME_TO_GUESS, check=check)
+                guesses[msg.author.id] = int(msg.content)
+        except asyncio.TimeoutError:
+            pass
 
-    if not guesses:
-        await interaction.channel.send("Nobody guessed! You're wasting my time :c")
-        return
+        if not guesses:
+            await interaction.channel.send("Nobody guessed! You're wasting my time :c")
+            return
 
 
-    results = []
-    for user_id, guess in guesses.items():
-        diff = abs(guess - level_position)
-        results.append((user_id, guess, diff))
+        results = []
+        for user_id, guess in guesses.items():
+            diff = abs(guess - level_position)
+            results.append((user_id, guess, diff))
 
-    results.sort(key=lambda x: x[2])
+        results.sort(key=lambda x: x[2])
 
-    winner_id, winner_guess, winner_diff = results[0]
+        winner_id, winner_guess, winner_diff = results[0]
 
-    winner_user = interaction.guild.get_member(winner_id) or bot.get_user(winner_id)
-    winner_name = winner_user.mention if winner_user else f"<@{winner_id}>"
+        winner_user = interaction.guild.get_member(winner_id) or bot.get_user(winner_id)
+        winner_name = winner_user.mention if winner_user else f"<@{winner_id}>"
 
-    result_lines = [
-        f"""
-✅ **The correct position was #{level_position}!**
+        result_lines = [
+            f"""
+# ✅ The correct position was #{level_position}!
 The Level was {level} created by {level_info.get("creator", "Unknown")} in {level_info.get("game_version", "Unknown")} and verified by {level_info.get("verification", {"username": "Unknown"}).get("username", "Unknown")}
 ID: ``{level_info.get("ingame_id", "Unknown")}``
 Watch: {level_info.get("verification", {"video_url": "Unknown"}).get("video_url", "Unknown")}
 
-🏆 **Winner:** {winner_name} by {winner_diff} positions (guessed {winner_guess})
-    """ + (
-            "-# Touch grass, get some friends vro"
-            if len(guesses) == 1
-            else ""
-        )
-    ]
+## 🏆 Winner: {winner_name} by {winner_diff} positions (guessed {winner_guess})
+        """ + (
+                "-# Touch grass, get some friends vro"
+                if len(guesses) == 1
+                else ""
+            )
+        ]
 
-    if len(results) > 1:
-        result_lines.append("__Leaderboard:__")
-        for i, (uid, g, d) in enumerate(results[:10], start=1):
-            name = f"<@{uid}>"
-            result_lines.append(f"{i}. {name} → {g} (off by {d})")
+        if len(results) > 1:
+            result_lines.append("__Leaderboard:__")
+            for i, (uid, g, d) in enumerate(results[:10], start=1):
+                name = f"<@{uid}>"
+                result_lines.append(f"{i}. {name} guessed {g} (off by {d})")
 
-    #channel = interaction.channel
-    #if isinstance(channel, TextChannel):
-    #    await channel.send("\n".join(result_lines))
-    await interaction.channel.send("\n".join(result_lines))
+        #channel = interaction.channel
+        #if isinstance(channel, TextChannel):
+        #    await channel.send("\n".join(result_lines))
+        await interaction.channel.send("\n".join(result_lines))
+
+    finally:
+        active_guess_channels.remove(channel_id)
 
 @bot.tree.command(name="say", description="Makes the bot say something (dont show that to Luis)")
 async def say(interaction: discord.Interaction, text: str):
