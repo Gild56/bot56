@@ -43,7 +43,8 @@ WORDS = {
     "femboy": "https://klipy.com/gifs/bro-has-femboy-potential",
     "saw": "https://tenor.com/fr/view/devil-vortex-saws-gif-8900131348507800976",
     "😃": "<:brih:1407021520504488076>",
-    "bdsm": "https://media.discordapp.net/attachments/1401117934633488405/1419989724931555459/quote_1415071290556940310.png?ex=6a97f67c&is=6a96a4fc&hm=59bd62ff29d3528104d5a51896f729c04c85dedc72897f390e1f2a3293ccff02&=&format=webp&quality=lossless"
+    "bdsm": "https://media.discordapp.net/attachments/1401117934633488405/1419989724931555459/quote_1415071290556940310.png?ex=6a97f67c&is=6a96a4fc&hm=59bd62ff29d3528104d5a51896f729c04c85dedc72897f390e1f2a3293ccff02&=&format=webp&quality=lossless",
+    "bill": "https://images-ext-1.discordapp.net/external/OXWa8J_YFF8Pn40I9lmJpv5uMa7zO_YJPeP84SVV6bg/https/cdn.discordapp.com/stickers/1537525635335987350.png?format=webp&quality=lossless"
 }
 
 def duration(sec: int | str):
