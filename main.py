@@ -39,7 +39,11 @@ WORDS = {
     "chat": "https://klipy.com/gifs/happy-catto-cats",
     "burmalda": "https://klipy.com/gifs/burmalda-1",
     "бурмалда": "https://klipy.com/gifs/burmalda-1",
-    "55": "https://klipy.com/gifs/geometry-dash-sticker-23"
+    "55": "https://klipy.com/gifs/geometry-dash-sticker-23",
+    "femboy": "https://klipy.com/gifs/bro-has-femboy-potential",
+    "saw": "https://tenor.com/fr/view/devil-vortex-saws-gif-8900131348507800976",
+    "😃": "<:brih:1407021520504488076>",
+    "bdsm": "https://media.discordapp.net/attachments/1401117934633488405/1419989724931555459/quote_1415071290556940310.png?ex=6a97f67c&is=6a96a4fc&hm=59bd62ff29d3528104d5a51896f729c04c85dedc72897f390e1f2a3293ccff02&=&format=webp&quality=lossless"
 }
 
 def duration(sec: int | str):
