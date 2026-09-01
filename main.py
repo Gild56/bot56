@@ -33,12 +33,13 @@ WORDS = {
     "krazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538",
     "job": "https://klipy.com/gifs/scary-job-application",
     "work": "https://klipy.com/gifs/scary-job-application",
-    "shitty angelicide": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
+    "angelicide": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
     "fire": "<:ifre:1434217322188505159>",
     "ifre": "<:ifre:1434217322188505159>",
     "chat": "https://klipy.com/gifs/happy-catto-cats",
     "burmalda": "https://klipy.com/gifs/burmalda-1",
-    "бурмалда": "https://klipy.com/gifs/burmalda-1"
+    "бурмалда": "https://klipy.com/gifs/burmalda-1",
+    "55": "https://klipy.com/gifs/geometry-dash-sticker-23"
 }
 
 def duration(sec: int | str):
@@ -72,7 +73,7 @@ async def on_message(message: discord.Message):
     content_clean = re.sub(url_regex, "", content_lower)
 
     for word, reply in WORDS.items():
-        if re.search(rf"\b{word}\b", content_clean):
+        if re.search(rf"{word}", content_clean):
             await message.reply(reply)
             break
 
