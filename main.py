@@ -59,8 +59,10 @@ async def on_message(message: discord.Message):
     content_lower = message.content.lower()
 
     url_regex = r"https?://\S+"
-
     content_clean = re.sub(url_regex, "", content_lower)
+
+    mention_regex = r"<[@#&]!?\d+>"
+    content_clean = re.sub(mention_regex, "", content_clean)
 
     for word, reply in WORDS.items():
         if re.search(rf"{word}", content_clean):
