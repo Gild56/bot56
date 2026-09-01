@@ -31,8 +31,14 @@ TIME_TO_GUESS = 10  # sec
 WORDS = {
     "crazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538",
     "krazy": "https://tenor.com/view/kyouki-gd-geometry-dash-gif-6703483145159127538",
-    "job": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
-    "shitty angelicide": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902"
+    "job": "https://klipy.com/gifs/scary-job-application",
+    "work": "https://klipy.com/gifs/scary-job-application",
+    "shitty angelicide": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
+    "fire": ":ifre:",
+    "ifre": ":ifre:",
+    "chat": "https://klipy.com/gifs/happy-catto-cats",
+    "burmalda": "https://klipy.com/gifs/burmalda-1",
+    "бурмалда": "https://klipy.com/gifs/burmalda-1"
 }
 
 def duration(sec: int | str):
