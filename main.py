@@ -34,8 +34,8 @@ WORDS = {
     "job": "https://klipy.com/gifs/scary-job-application",
     "work": "https://klipy.com/gifs/scary-job-application",
     "shitty angelicide": "https://tenor.com/view/breaking-bad-walter-white-points-gun-gun-shoot-gif-3298902",
-    "fire": ":ifre:",
-    "ifre": ":ifre:",
+    "fire": "<:ifre:1434217322188505159>",
+    "ifre": "<:ifre:1434217322188505159>",
     "chat": "https://klipy.com/gifs/happy-catto-cats",
     "burmalda": "https://klipy.com/gifs/burmalda-1",
     "бурмалда": "https://klipy.com/gifs/burmalda-1"
