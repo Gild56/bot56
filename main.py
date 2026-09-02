@@ -56,6 +56,12 @@ async def on_message(message: discord.Message):
     if message.author == bot.user:
         return
 
+    for word, reply in WORDS.items():
+        if word.startswith("<@") and word.endswith(">"):
+            if word in message.content:
+                await message.reply(reply)
+                return
+
     content_lower = message.content.lower()
 
     url_regex = r"https?://\S+"
@@ -65,7 +71,10 @@ async def on_message(message: discord.Message):
     content_clean = re.sub(mention_regex, "", content_clean)
 
     for word, reply in WORDS.items():
-        if re.search(rf"{word}", content_clean):
+        if word.startswith("<@") and word.endswith(">"):
+            continue
+
+        if re.search(rf"{re.escape(word.lower())}", content_clean):
             await message.reply(reply)
             break
 
