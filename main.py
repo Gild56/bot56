@@ -57,7 +57,7 @@ async def on_message(message: discord.Message):
         return
 
     for word, reply in WORDS.items():
-        if word.startswith("<@") and word.endswith(">"):
+        if word.startswith("<") and word.endswith(">"):
             if word in message.content:
                 await message.reply(reply)
                 return
