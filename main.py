@@ -26,9 +26,11 @@ if not DISCORD_TOKEN:
         "You must create a .env file and write something like DISCORD_TOKEN=AB1wdfCD42.E41ghjfFG"
     )
 
+
 BOT_CHANNEL_ID = 1401147497438515361
 LOGS_CHANNEL_ID = 1403021816460476466
 GUILD_ID = 1401117933203226727
+GENERAL_CATEGORY_ID = 1401117934633488404
 RICKROLL_GIF_URLS = [
     "https://klipy.com/gifs/hugs-rickroll", "https://klipy.com/gifs/rickroll-never-gonna-give-you-up-9",
     "https://klipy.com/gifs/very-importatn", "https://klipy.com/gifs/rick-roll-50", "https://klipy.com/gifs/spoiler-3",
@@ -227,7 +229,8 @@ async def send_rickroll():
     channels = [
         channel
         for channel in guild.text_channels
-        if channel.permissions_for(guild.me).send_messages
+        if channel.category_id == GENERAL_CATEGORY_ID
+        and channel.permissions_for(guild.me).send_messages
     ]
 
     if not channels:
