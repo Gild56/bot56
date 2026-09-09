@@ -8,7 +8,10 @@ import aiohttp
 import dotenv
 import json
 from discord.ext import commands
-#from discord import TextChannel
+from discord.ext import commands, tasks
+from datetime import datetime, timedelta
+import random
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -26,6 +29,12 @@ if not DISCORD_TOKEN:
 BOT_CHANNEL_ID = 1401147497438515361
 LOGS_CHANNEL_ID = 1403021816460476466
 GUILD_ID = 1401117933203226727
+RICKROLL_GIF_URLS = [
+    "https://klipy.com/gifs/hugs-rickroll", "https://klipy.com/gifs/rickroll-never-gonna-give-you-up-9",
+    "https://klipy.com/gifs/very-importatn", "https://klipy.com/gifs/rick-roll-50", "https://klipy.com/gifs/spoiler-3",
+    "https://klipy.com/gifs/oh-no-bro", "https://klipy.com/gifs/rickroll-15", "https://klipy.com/gifs/zant-just-got-rick-rolled",
+    "https://klipy.com/gifs/bread-rickroll", "https://klipy.com/gifs/trade-offer-rickroll-1"
+]
 
 TIME_TO_GUESS = 10  # sec
 
@@ -193,7 +202,7 @@ Watch: {level_info.get("verification", {"video_url": "Unknown"}).get("video_url"
     finally:
         active_guess_channels.remove(channel_id)
 
-@bot.tree.command(name="say", description="Makes the bot say something (dont show that to Luis)")
+@bot.tree.command(name="say", description="Makes the bot say something lmao")
 async def say(interaction: discord.Interaction, text: str):
     await interaction.channel.send(text)
 
@@ -203,15 +212,99 @@ async def say(interaction: discord.Interaction, text: str):
     if logs_channel:
         await logs_channel.send(f"{interaction.user.name} used `/say` writing \"{text}\"")
 
+
+rickroll_task_started = False
+next_rickroll_time = None
+
+
+async def send_rickroll():
+    guild = bot.get_guild(GUILD_ID)
+
+    if not guild:
+        print("Guild not found!")
+        return
+
+    channels = [
+        channel
+        for channel in guild.text_channels
+        if channel.permissions_for(guild.me).send_messages
+    ]
+
+    if not channels:
+        print("No channel available for rickroll!")
+        return
+
+    channel = random.choice(channels)
+    gif_url = random.choice(RICKROLL_GIF_URLS)
+
+    await channel.send(gif_url)
+
+    print(f"Rickroll sent in #{channel.name}: {gif_url}")
+
+
+@tasks.loop(seconds=60)
+async def daily_rickroll():
+    global next_rickroll_time
+
+    now = datetime.now()
+
+    if now >= next_rickroll_time:
+        await send_rickroll()
+
+        tomorrow = now + timedelta(days=1)
+
+        random_hour = random.randint(0, 23)
+        random_minute = random.randint(0, 59)
+
+        next_rickroll_time = tomorrow.replace(
+            hour=random_hour,
+            minute=random_minute,
+            second=0,
+            microsecond=0
+        )
+
+        print(f"Next rickroll: {next_rickroll_time}")
+
+
+@daily_rickroll.before_loop
+async def before_daily_rickroll():
+    await bot.wait_until_ready()
+
+
 @bot.event
 async def on_ready():
+    global rickroll_task_started
+    global next_rickroll_time
+
     print(f"Bot connected as {bot.user}")
+
     synced = await bot.tree.sync()
     print(f"Synced {len(synced)} commands to guild {GUILD_ID}")
 
     channel = bot.get_channel(BOT_CHANNEL_ID)
     if channel:
         await channel.send("Bot is up!")
+
+    await send_rickroll()
+
+    now = datetime.now()
+    tomorrow = now + timedelta(days=1)
+
+    random_hour = random.randint(0, 23)
+    random_minute = random.randint(0, 59)
+
+    next_rickroll_time = tomorrow.replace(
+        hour=random_hour,
+        minute=random_minute,
+        second=0,
+        microsecond=0
+    )
+
+    print(f"Next rickroll: {next_rickroll_time}")
+
+    if not rickroll_task_started:
+        daily_rickroll.start()
+        rickroll_task_started = True
 
 
 from flask import Flask
