@@ -75,17 +75,9 @@ async def on_message(message: discord.Message):
 
     content_lower = message.content.lower()
 
-    url_regex = r"https?://\S+"
-    content_clean = re.sub(url_regex, "", content_lower)
-
-    discord_tag_regex = r"<[@#&]!?\d+>|<a?:\w+:\d+>"
-    content_clean = re.sub(discord_tag_regex, "", content_clean)
-
     for word, reply in WORDS.items():
-        if word.startswith("<@") and word.endswith(">"):
-            continue
 
-        if re.search(rf"{re.escape(word.lower())}", content_clean):
+        if re.search(rf"{re.escape(word.lower())}", content_lower):
             await message.reply(reply)
             break
 
