@@ -320,4 +320,8 @@ def run_web():
 threading.Thread(target=run_web, daemon=True).start()
 
 
-bot.run(DISCORD_TOKEN)
+if __name__ == "__main__":
+    try:
+        bot.run(DISCORD_TOKEN, log_handler=None)
+    except discord.HTTPException as e:
+        print(f"Discord login failed: HTTP {e.status}: {e}")
